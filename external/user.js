@@ -10,7 +10,7 @@ const data = [
     role: "admin",
   }),
   new User({
-    id: 3,
+    id: 2,
     name: "Employee1",
     username: "employee1",
     password: "employee1",
@@ -18,7 +18,7 @@ const data = [
     role: "employee",
   }),
   new User({
-    id: 4,
+    id: 3,
     name: "Employee2",
     username: "employee2",
     password: "employee2",
@@ -26,7 +26,7 @@ const data = [
     role: "employee",
   }),
   new User({
-    id: 5,
+    id: 4,
     name: "Employee3",
     username: "employee3",
     password: "employee3",
