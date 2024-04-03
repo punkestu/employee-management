@@ -69,6 +69,25 @@ const isReviewer = (task) => (user) =>
     resolve(task);
   });
 
+const isAsignee = (task) => (user) =>
+  new Promise((resolve, reject) => {
+    if (!task.asignees.some((asignee) => asignee.id === user.id)) {
+      reject(new HttpError(403, "Not asignee"));
+    }
+    resolve(task);
+  });
+
+const isMember = (task) => (user) =>
+  new Promise((resolve, reject) => {
+    if (
+      !task.asignees.some((asignee) => asignee.id === user.id) &&
+      !task.reviewers.some((reviewer) => reviewer.id === user.id)
+    ) {
+      reject(new HttpError(403, "Not member"));
+    }
+    resolve(task);
+  });
+
 const statusIsValid = (status) => (payload) =>
   new Promise((resolve, reject) => {
     if (status === undefined) {
@@ -82,6 +101,8 @@ const statusIsValid = (status) => (payload) =>
 
 module.exports = {
   isReviewer,
+  isAsignee,
+  isMember,
   statusIsValid,
   createTask,
 };
