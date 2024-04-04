@@ -6,9 +6,9 @@ class HttpError extends Error {
 }
 
 class HttpErrors {
-  constructor(status) {
+  constructor(status, errors) {
     this.status = status;
-    this.errors = new Map();
+    this.errors = new Map(Object.entries(errors) || {});
   }
   addError(key, message) {
     if (!this.errors.has(key)) {
