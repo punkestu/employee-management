@@ -6,5 +6,6 @@ RUN chown -R node:node /home/node/app
 USER node
 RUN npm install
 COPY --chown=node:node . .
+RUN cd client && npm install
 EXPOSE 3000
 CMD ["npm", "start"]
