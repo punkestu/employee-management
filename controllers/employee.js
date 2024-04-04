@@ -23,6 +23,12 @@ const getEmployees = async (req, res) => {
 const addEmployee = async (req, res) => {
   try {
     const result = await getUser()
+      .then((users) =>
+        users.filter(
+          (user) =>
+            user.username === req.body.username || user.email === req.body.email
+        )
+      )
       .then(validate.employee.register(req.body))
       .then(addUser);
     return res.status(200).json(result);

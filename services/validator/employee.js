@@ -9,11 +9,13 @@ const register =
       if (!name || !username || !password || !email || !role) {
         errors.addError("*", "All fields are required");
       }
-      if (users.find((user) => user.username === username)) {
-        errors.addError("username", "Username already exists");
-      }
-      if (users.find((user) => user.email === email)) {
-        errors.addError("email", "Email already exists");
+      if (users.length > 0){
+        if (users.find((user) => user.username === username)) {
+          errors.addError("username", "Username already exists");
+        }
+        if (users.find((user) => user.email === email)) {
+          errors.addError("email", "Email already exists");
+        }
       }
       if (!["employee"].includes(role)) {
         errors.addError("role", "Invalid role");
