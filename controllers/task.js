@@ -1,11 +1,7 @@
 const TaskE = require("../external/task");
-const { getTokenFromBearer } = require("../services/auth");
-const {
-  isReviewer,
-  statusIsValid,
-  createTask: createTaskValidator,
-} = require("../services/validator/task");
 const { validateToken } = require("../external/jwt");
+const { getTokenFromBearer } = require("../services/auth");
+const { task: validator } = require("../services/validator");
 const { error500 } = require("../services/prodGuards");
 const { HttpError, HttpErrors } = require("../models/error");
 
@@ -26,12 +22,12 @@ const changeStatus = async (req, res) => {
     const taskId = parseInt(req.params.id);
     const task = await TaskE.getTasks()
       .then((tasks) => tasks.find((task) => task.id === taskId))
-      .then((task) => (task ? { ...task } : null));
+      .then((task) => (task ? { ...task } : null))
     if (!task) throw new HttpError(404, "Task not found");
     await getTokenFromBearer(req.headers.authorization)
       .then(validateToken)
-      .then(statusIsValid(req.body.status))
-      .then(isReviewer(task));
+      .then(validator.statusIsValid(req.body.status))
+      .then(validator.isReviewer(task));
     await TaskE.updateTask(taskId, { status: req.body.status });
     return res.status(200).json({ message: "changed" });
   } catch (error) {
@@ -43,7 +39,7 @@ const changeStatus = async (req, res) => {
 
 const createTask = async (req, res) => {
   try {
-    const task = await createTaskValidator(req.body).then(TaskE.createTask);
+    const task = await validator.createTask(req.body).then(TaskE.createTask);
     return res.status(201).json({ data: task });
   } catch (error) {
     if (error instanceof HttpErrors) {
