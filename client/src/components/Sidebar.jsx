@@ -2,13 +2,15 @@ import { signout } from "../helper/auth";
 import { useContext } from "react";
 import { AuthContext } from "../store";
 
+import { useNavigate, Link } from "react-router-dom";
+
+import Profile from "./Profile";
+
 export default function Sidebar() {
   const [isAuth, setIsAuth] = useContext(AuthContext);
+  const navigate = useNavigate();
   return (
-    <aside
-      className="sidebar"
-      id="side-bar"
-    >
+    <aside className="sidebar" id="side-bar">
       <h1
         style={{
           marginBottom: "8px",
@@ -24,16 +26,18 @@ export default function Sidebar() {
             onClick={() => {
               signout();
               setIsAuth(false);
+              navigate("/login");
             }}
           >
             Logout
           </button>
+          <Profile />
         </>
       ) : (
         <>
-          <a className="side-item" href="/login">
+          <Link className="side-item" to="/login">
             Login
-          </a>
+          </Link>
         </>
       )}
     </aside>

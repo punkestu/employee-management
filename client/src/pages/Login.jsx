@@ -1,14 +1,20 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { authenticate } from "../helper/auth";
 import { useContext } from "react";
-import { AuthContext } from "../store";
+import { AuthContext, StateContext } from "../store";
+
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useContext(AuthContext);
+  const [state, setState] = useContext(StateContext);
+  const navigate = useNavigate();
   const auth = (e) => {
     e.preventDefault();
+    setState("loading");
     authenticate(username, password).then((res) => {
       if (res.status === 200) {
         localStorage.setItem("auth", res.body.token);
@@ -16,11 +22,12 @@ export default function Login() {
       } else {
         console.log(res.body);
       }
+      setState("");
     });
   };
   useEffect(() => {
     if (isAuth) {
-      window.location.href = "/";
+      navigate("/");
     }
   }, [isAuth]);
   return (
@@ -55,6 +62,7 @@ export default function Login() {
           onChange={(e) => {
             setUsername(e.target.value);
           }}
+          disabled={state === "loading"}
         />
         <input
           type="password"
@@ -66,8 +74,13 @@ export default function Login() {
           onChange={(e) => {
             setPassword(e.target.value);
           }}
+          disabled={state === "loading"}
         />
-        <button type="submit" className="input-form">
+        <button
+          type="submit"
+          className="input-form"
+          disabled={state === "loading"}
+        >
           Login
         </button>
       </form>

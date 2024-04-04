@@ -5,11 +5,15 @@ import Sidebar from "./components/Sidebar";
 import { wasAuth } from "./helper/auth";
 import { Rollup } from "./helper/context";
 
-import { AuthContext } from "./store";
+import { AuthContext, StateContext } from "./store";
 import Login from "./pages/Login";
 
 function App() {
-  const providers = [[AuthContext, useState(wasAuth())]];
+  const [state, setState] = useState("");
+  const providers = [
+    [AuthContext, useState(wasAuth())],
+    [StateContext, [state, setState]],
+  ];
 
   return (
     <Rollup providers={providers}>
@@ -23,6 +27,25 @@ function App() {
           gap: "10px",
         }}
       >
+        {state === "loading" && (
+          <div
+            style={{
+              position: "absolute",
+              top: "0",
+              left: "0",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              fontSize: "2rem",
+              color: "white",
+            }}
+          >
+            Loading...
+          </div>
+        )}
         <Sidebar />
         <aside
           style={{
