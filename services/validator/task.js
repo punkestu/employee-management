@@ -1,6 +1,7 @@
 const { taskStatus } = require("../../models/task");
 const { Task } = require("../../models/task");
-const { HttpError, HttpErrors } = require("../../models/error");
+const { HttpError } = require("../../models/error");
+const { validate, handle } = require("./lib");
 
 const createTask = ({
   title,
@@ -12,91 +13,109 @@ const createTask = ({
   due_date,
 }) =>
   new Promise((resolve, reject) => {
-    const errors = new HttpErrors(400);
-    if (
-      !title ||
-      !description ||
-      !status ||
-      !asignees ||
-      !reviewers ||
-      !start_date ||
-      !due_date
-    ) {
-      errors.addError("*", "All fields are required");
-      reject(errors);
-    }
-    if (!asignees.length) {
-      errors.addError("asignees", "At least one asignee is required");
-    }
-    if (!reviewers.length) {
-      errors.addError("reviewers", "At least one reviewer is required");
-    }
-    statusIsValid(status)({}).catch((error) =>
-      errors.addError("status", error.message)
-    );
-    const start = new Date(start_date);
-    if (start.toString() === "Invalid Date") {
-      errors.addError("start_date", "Invalid date");
-    }
-    const due = new Date(due_date);
-    if (due.toString() === "Invalid Date") {
-      errors.addError("due_date", "Invalid date");
-    }
-    if (start > due) {
-      errors.addError("due_date", "Due date must be after start date");
-    }
-    if (errors.isError()) {
-      reject(errors);
-    }
-    resolve(
-      new Task({
-        title,
-        description,
-        status,
-        asignees,
-        reviewers,
-        start_date,
-        due_date,
-      })
-    );
+    validate(
+      () =>
+        !title ||
+        !description ||
+        !status ||
+        !asignees ||
+        !reviewers ||
+        !start_date ||
+        !due_date,
+      "*",
+      "All fields are required"
+    )()
+      .then(
+        validate(
+          () => !asignees.length,
+          "asignees",
+          "At least one asignee is required"
+        )
+      )
+      .then(
+        validate(
+          () => !reviewers.length,
+          "reviewers",
+          "At least one reviewer is required"
+        )
+      )
+      .then(
+        validate(
+          async () =>
+            await statusIsValid(status)()
+              .then(() => false)
+              .catch(() => true),
+          "status",
+          "Invalid status"
+        )
+      )
+      .then(
+        validate(
+          () => new Date(start_date).toString() === "Invalid Date",
+          "start_date",
+          "Invalid date"
+        )
+      )
+      .then(
+        validate(
+          () => new Date(due_date).toString() === "Invalid Date",
+          "due_date",
+          "Invalid date"
+        )
+      )
+      .then(
+        validate(
+          () => new Date(start_date) > new Date(due_date),
+          "due_date",
+          "Due date must be after start date"
+        )
+      )
+      .then(
+        handle(
+          [resolve, reject],
+          400,
+          new Task({
+            title,
+            description,
+            status,
+            asignees,
+            reviewers,
+            start_date,
+            due_date,
+          })
+        )
+      );
   });
 
 const isReviewer = (task) => (user) =>
   new Promise((resolve, reject) => {
-    if (!task.reviewers.some((reviewer) => reviewer.id === user.id)) {
-      reject(new HttpError(403, "Not reviewer"));
-    }
-    resolve(task);
+    !task.reviewers.some((reviewer) => reviewer.id === user.id)
+      ? reject(new HttpError(403, "Not reviewer"))
+      : resolve(task);
   });
 
 const isAsignee = (task) => (user) =>
   new Promise((resolve, reject) => {
-    if (!task.asignees.some((asignee) => asignee.id === user.id)) {
-      reject(new HttpError(403, "Not asignee"));
-    }
-    resolve(task);
+    !task.asignees.some((asignee) => asignee.id === user.id)
+      ? reject(new HttpError(403, "Not asignee"))
+      : resolve(task);
   });
 
 const isMember = (task) => (user) =>
   new Promise((resolve, reject) => {
-    if (
-      !task.asignees.some((asignee) => asignee.id === user.id) &&
-      !task.reviewers.some((reviewer) => reviewer.id === user.id)
-    ) {
-      reject(new HttpError(403, "Not member"));
-    }
-    resolve(task);
+    !task.asignees.some((asignee) => asignee.id === user.id) &&
+    !task.reviewers.some((reviewer) => reviewer.id === user.id)
+      ? reject(new HttpError(403, "Not member"))
+      : resolve(task);
   });
 
 const statusIsValid = (status) => (payload) =>
   new Promise((resolve, reject) => {
-    if (status === undefined) {
-      reject(new HttpError(400, "Status is required"));
-    }
-    if (!Object.values(taskStatus).includes(status)) {
-      reject(new HttpError(400, "Invalid status"));
-    }
-    resolve(payload);
+    status === undefined
+      ? reject(new HttpError(400, "Status is required"))
+      : !Object.values(taskStatus).includes(status)
+      ? reject(new HttpError(400, "Invalid status"))
+      : resolve(payload);
   });
 
 module.exports = {
