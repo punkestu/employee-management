@@ -2,13 +2,10 @@ const { HttpError } = require("../models/error");
 const { User } = require("../models/user");
 
 const login =
-  ({ username, password }) =>
-  (users) => {
+  ({ password }) =>
+  (user) => {
     return new Promise((resolve, reject) => {
-      const user = users.find(
-        (user) => user.username === username && user.password === password
-      );
-      if (user) {
+      if (user && user.password === password) {
         resolve(new User({ ...user }));
       }
       reject(new HttpError(400, "Invalid credentials"));
