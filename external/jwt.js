@@ -4,7 +4,7 @@ const { HttpError } = require("../models/error");
 const generateToken = (options) => (user) =>
   new Promise((resolve) => {
     const _options = options || { expiresIn: "1h" };
-    const token = jwt.sign({ ...user }, "shhhhh", _options);
+    const token = jwt.sign({ ...user, password: undefined }, "shhhhh", _options);
     resolve({
       token,
     });

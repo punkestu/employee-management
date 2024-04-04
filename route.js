@@ -1,10 +1,11 @@
 const route = require("express").Router();
-const { login } = require("./controllers/auth");
+const Auth = require("./controllers/auth");
 const { getEmployees, addEmployee } = require("./controllers/employee");
 const { getTasks, createTask, changeStatus } = require("./controllers/task");
 const Artifact = require("./controllers/artifact");
 
-route.post("/api/login", login);
+route.post("/api/login", Auth.login);
+route.get("/api/profile", Auth.profile);
 route.post("/api/employees", addEmployee);
 route.get("/api/employees", getEmployees);
 route.get("/api/tasks", getTasks);
