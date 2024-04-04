@@ -1,0 +1,33 @@
+*{
+    font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+#side-bar {
+    height: 100%;
+    background-color: lightgray;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.side-item {
+    background: none;
+    border: none;
+    font-size: 1rem;
+    cursor: pointer;
+    color: black;
+    text-align: start;
+    text-decoration: none;
+}
+
+.side-item:hover {
+    text-decoration: underline;
+}
+
+.input-form {
+    padding: 4px 8px;
+}

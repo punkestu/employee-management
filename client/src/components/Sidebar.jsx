@@ -5,11 +5,21 @@ import { AuthContext } from "../store";
 export default function Sidebar() {
   const [isAuth, setIsAuth] = useContext(AuthContext);
   return (
-    <aside className="sidebar">
-      <h1>Employee Manager</h1>
+    <aside
+      className="sidebar"
+      id="side-bar"
+    >
+      <h1
+        style={{
+          marginBottom: "8px",
+        }}
+      >
+        Employee Manager
+      </h1>
       {isAuth ? (
         <>
           <button
+            className="side-item"
             type="button"
             onClick={() => {
               signout();
@@ -20,7 +30,11 @@ export default function Sidebar() {
           </button>
         </>
       ) : (
-        <a href="/login">Login</a>
+        <>
+          <a className="side-item" href="/login">
+            Login
+          </a>
+        </>
       )}
     </aside>
   );

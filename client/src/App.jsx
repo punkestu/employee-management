@@ -13,12 +13,32 @@ function App() {
 
   return (
     <Rollup providers={providers}>
-      <Sidebar />
-      <Routes>
-        <Route path="/">
-          <Route path="login" element={<Login />} />
-        </Route>
-      </Routes>
+      <main
+        style={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "row",
+          height: "100vh",
+          padding: "10px",
+          gap: "10px",
+        }}
+      >
+        <Sidebar />
+        <aside
+          style={{
+            height: "100%",
+            flexGrow: 1,
+            backgroundColor: "lightgray",
+            overflowY: "auto",
+          }}
+        >
+          <Routes>
+            <Route path="/">
+              <Route path="login" element={<Login />} />
+            </Route>
+          </Routes>
+        </aside>
+      </main>
     </Rollup>
   );
 }
