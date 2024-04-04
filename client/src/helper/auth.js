@@ -17,7 +17,7 @@ export function authenticate(username, password) {
   });
 }
 
-export function isAuth() {
+export function wasAuth() {
   if (localStorage.getItem("auth")) {
     return localStorage.getItem("auth");
   } else {

@@ -1,10 +1,27 @@
-import { isAuth } from "../helper/auth";
+import { signout } from "../helper/auth";
+import { useContext } from "react";
+import { AuthContext } from "../store";
 
 export default function Sidebar() {
+  const [isAuth, setIsAuth] = useContext(AuthContext);
   return (
-    <div className="sidebar">
+    <aside className="sidebar">
       <h1>Employee Manager</h1>
-      {isAuth() ? <></> : <a href="/login">Login</a>}
-    </div>
+      {isAuth ? (
+        <>
+          <button
+            type="button"
+            onClick={() => {
+              signout();
+              setIsAuth(false);
+            }}
+          >
+            Logout
+          </button>
+        </>
+      ) : (
+        <a href="/login">Login</a>
+      )}
+    </aside>
   );
 }
