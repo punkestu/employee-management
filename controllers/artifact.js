@@ -1,21 +1,20 @@
-const {
-  getTaskArtifact,
-  createArtifact,
-  addComment,
-} = require("../external/artifact");
-const { getTasks } = require("../external/task");
-const validator = require("../services/validator/artifact");
-const { error500 } = require("../services/prodGuards");
+const ArtifactE = require("../external/artifact");
+const TaskE = require("../external/task");
 const { validateToken } = require("../external/jwt");
 const { getTokenFromBearer } = require("../services/auth");
-const { isAsignee, isMember } = require("../services/validator/task");
-const { Artifact } = require("../models/artifact");
+const { error500 } = require("../services/prodGuards");
+const {
+  artifact: validator,
+  task: validatorTask,
+} = require("../services/validator");
 const { HttpErrors } = require("../models/error");
 
 const getAll = async (req, res) => {
   try {
     await getTokenFromBearer(req.headers.authorization).then(validateToken);
-    const artifacts = await getTaskArtifact(parseInt(req.params.task_id));
+    const artifacts = await ArtifactE.getTaskArtifact(
+      parseInt(req.params.task_id)
+    );
     res.status(200).json(artifacts);
   } catch (error) {
     return res
@@ -26,7 +25,7 @@ const getAll = async (req, res) => {
 
 const create = async (req, res) => {
   try {
-    const task = await getTasks().then((tasks) =>
+    const task = await TaskE.getTasks().then((tasks) =>
       tasks.find((task) => task.id === parseInt(req.params.task_id))
     );
     if (!task) {
@@ -34,11 +33,11 @@ const create = async (req, res) => {
     }
     await getTokenFromBearer(req.headers.authorization)
       .then(validateToken)
-      .then(isAsignee(task));
+      .then(validatorTask.isAsignee(task));
     const artifact = await validator
       .createArtifact(req.body)
       .then((content) =>
-        createArtifact(new Artifact({ ...content, task_id: task.id }))
+        ArtifactE.createArtifact({ ...content, task_id: task.id })
       );
     res.status(201).json(artifact);
   } catch (error) {
@@ -53,9 +52,9 @@ const create = async (req, res) => {
   }
 };
 
-const addCommentC = async (req, res) => {
+const addComment = async (req, res) => {
   try {
-    const task = await getTasks().then((tasks) =>
+    const task = await TaskE.getTasks().then((tasks) =>
       tasks.find((task) => task.id === parseInt(req.params.task_id))
     );
     if (!task) {
@@ -64,8 +63,9 @@ const addCommentC = async (req, res) => {
     const user = await getTokenFromBearer(req.headers.authorization).then(
       validateToken
     );
-    const artifact = await isMember(task)(user)
-      .then(() => getTaskArtifact(task.id))
+    const artifact = await validatorTask
+      .isMember(task)(user)
+      .then(() => ArtifactE.getTaskArtifact(task.id))
       .then((artifacts) =>
         artifacts.find(
           (artifact) => artifact.id === parseInt(req.params.artifact_id)
@@ -77,7 +77,7 @@ const addCommentC = async (req, res) => {
     const comment = await validator
       .addComment(req.body)
       .then((content) =>
-        addComment(artifact.id, { ...content, user_id: user.id })
+        ArtifactE.addComment(artifact.id, { ...content, user_id: user.id })
       );
     res.status(201).json(comment);
   } catch (error) {
@@ -92,4 +92,4 @@ const addCommentC = async (req, res) => {
   }
 };
 
-module.exports = { getAll, create, addComment: addCommentC };
+module.exports = { getAll, create, addComment };
