@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "build": "browserify --node --ignore-missing index.js | terser > bundle.js",
     "dev": "node index.js",
-    "start": "NODE_ENV=production node index.js"
+    "start": "NODE_ENV=production node bundle.js"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +15,9 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "browserify": "^17.0.0",
+    "terser": "^5.30.3"
   }
 }
