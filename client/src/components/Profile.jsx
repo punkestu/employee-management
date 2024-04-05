@@ -1,11 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useState, useEffect, useContext } from "react";
-import { AuthContext } from "../store";
+import { useEffect, useContext } from "react";
+import { AuthContext, UserContext } from "../store";
 import { signout } from "../helper/auth";
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const [user, setUser] = useState({});
-  const [isAuth] = useContext(AuthContext);
+  const [user, setUser] = useContext(UserContext);
+  const [isAuth, setIsAuth] = useContext(AuthContext);
+  const navigate = useNavigate();
   useEffect(() => {
     if (isAuth) {
       fetch(
@@ -19,12 +21,14 @@ export default function Profile() {
       )
         .then((res) => {
           if (res.status === 401) {
-            return signout();
+            navigate("/login");
+            setIsAuth(false);
+            signout();
           }
           return res.json();
         })
         .then((res) => {
-          setUser(res.data);
+          setUser(res ? res.data : {});
         });
     }
   }, []);

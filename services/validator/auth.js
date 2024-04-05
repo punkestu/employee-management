@@ -1,3 +1,5 @@
+const {HttpError} = require("../../models/error");
+
 const isAdmin = (user) =>
   new Promise((res, rej) => {
     if (user.role !== "admin") {

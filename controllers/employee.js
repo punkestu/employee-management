@@ -1,6 +1,6 @@
 const employeeService = require("../services/employee");
 const validate = require("../services/validator");
-const { getTokenFromBearer, isAdmin } = require("../services/auth");
+const { getTokenFromBearer } = require("../services/auth");
 const { error500 } = require("../services/prodGuards");
 const { getUser, addUser } = require("../external/user");
 const { validateToken } = require("../external/jwt");
@@ -10,7 +10,7 @@ const getEmployees = async (req, res) => {
   try {
     await getTokenFromBearer(req.headers.authorization)
       .then(validateToken)
-      .then(isAdmin);
+      .then(validate.auth.isAdmin);
     const employees = await getUser().then(employeeService.getEmployees);
     return res.status(200).json({ data: employees });
   } catch (error) {

@@ -5,14 +5,16 @@ import Sidebar from "./components/Sidebar";
 import { wasAuth } from "./helper/auth";
 import { Rollup } from "./helper/context";
 
-import { AuthContext, StateContext } from "./store";
+import { AuthContext, StateContext, UserContext } from "./store";
 import Login from "./pages/Login";
+import Employee from "./pages/Employee";
 
 function App() {
   const [state, setState] = useState("");
   const providers = [
     [AuthContext, useState(wasAuth())],
     [StateContext, [state, setState]],
+    [UserContext, useState({})],
   ];
 
   return (
@@ -58,6 +60,10 @@ function App() {
           <Routes>
             <Route path="/">
               <Route path="login" element={<Login />} />
+              <Route path="employee">
+                <Route index element={<Employee />} />
+                <Route path="add" element={<div>Add Employee</div>} />
+              </Route>
             </Route>
           </Routes>
         </aside>
