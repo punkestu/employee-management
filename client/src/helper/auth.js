@@ -8,13 +8,17 @@ export function authenticate(username, password) {
       },
       body: JSON.stringify({ username, password }),
     }
-  ).then(async (res) => {
-    const body = await res.json();
-    return {
-      status: res.status,
-      body,
-    };
-  });
+  )
+    .then(async (res) => {
+      const body = await res.json();
+      return {
+        status: res.status,
+        body,
+      };
+    })
+    .catch((err) => ({
+      body: `${err.message}`,
+    }));
 }
 
 export function wasAuth() {

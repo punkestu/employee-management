@@ -19,6 +19,7 @@ export default function Profile() {
           },
         }
       )
+        .catch((err) => ({ body: `${err.message}` }))
         .then((res) => {
           if (res.status === 401) {
             navigate("/login");

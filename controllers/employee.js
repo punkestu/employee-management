@@ -21,7 +21,7 @@ const getEmployees = async (req, res) => {
 };
 
 const addEmployee = async (req, res) => {
-  try {
+  // try {
     const result = await getUser()
       .then((users) =>
         users.filter(
@@ -32,16 +32,16 @@ const addEmployee = async (req, res) => {
       .then(validate.employee.register(req.body))
       .then(addUser);
     return res.status(200).json(result);
-  } catch (error) {
-    if (error instanceof HttpErrors) {
-      return res.status(error.status || 500).json({
-        errors: error500(error.status || 500, error.getErrors()),
-      });
-    }
-    return res.status(error.status || 500).json({
-      error: error500(error.status || 500, error.message),
-    });
-  }
+  // } catch (error) {
+  //   if (error instanceof HttpErrors) {
+  //     return res.status(error.status || 500).json({
+  //       errors: error500(error.status || 500, error.getErrors()),
+  //     });
+  //   }
+  //   return res.status(error.status || 500).json({
+  //     error: error500(error.status || 500, error.message),
+  //   });
+  // }
 };
 
 module.exports = {

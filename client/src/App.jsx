@@ -8,6 +8,7 @@ import { Rollup } from "./helper/context";
 import { AuthContext, StateContext, UserContext } from "./store";
 import Login from "./pages/Login";
 import Employee from "./pages/Employee";
+import EmployeeAdd from "./pages/EmployeeAdd";
 
 function App() {
   const [state, setState] = useState("");
@@ -62,7 +63,7 @@ function App() {
               <Route path="login" element={<Login />} />
               <Route path="employee">
                 <Route index element={<Employee />} />
-                <Route path="add" element={<div>Add Employee</div>} />
+                <Route path="add" element={<EmployeeAdd />} />
               </Route>
             </Route>
           </Routes>
